@@ -27,12 +27,12 @@ server.use(function(req, res, next) {
 
 //===================== DEFINIÇÃO DAS ROTAS ==============================
 /*central*/
-server.get('/central', central.getAll);
-server.get('/central/:id', central.getOne);
-server.post('/central', central.createNew);
+server.get('/api/central', central.getAll);
+server.get('/api/central/:id', central.getOne);
+server.post('/api/central', central.createNew);
 
 /*Leituras*/
-server.post('/leitura', central.validateKey, function(req, res, next) {
+server.post('/api/leitura', central.validateKey, function(req, res, next) {
   return res.send(200, {
     error: false,
     message: "OK!"
