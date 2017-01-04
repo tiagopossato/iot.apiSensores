@@ -40,7 +40,7 @@ server.post('/leitura', central.validateKey, function(req, res, next) {
 });
 
 //===================== INÍCIO DO SERVIDOR ==============================
-server.listen(8080, function() {
+server.listen(8080, '127.0.0.1', function() {
   console.log('%s listening at %s', server.name, server.url);
 });
 
