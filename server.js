@@ -1,6 +1,7 @@
 var restify = require('restify');
 var fs = require('fs');
 var central = require('./controls/CentralController');
+var alarme = require('./controls/AlarmeController');
 
 //===================== CRIAÇÃO DO SERVIDOR ==============================
 var server = restify.createServer({
@@ -31,6 +32,11 @@ server.get('/api/central', central.getAll);
 server.get('/api/central/:id', central.getOne);
 server.post('/api/central', central.createNew);
 
+/*Alarmes*/
+server.get('/api/alarme', alarme.getAll);
+server.post('/api/alarme', alarme.createNew);
+server.put('/api/alarme', alarme.update);
+
 /*Leituras*/
 server.post('/api/leitura', central.validateKey, function(req, res, next) {
   return res.send(200, {
@@ -38,6 +44,7 @@ server.post('/api/leitura', central.validateKey, function(req, res, next) {
     message: "OK!"
   });
 });
+
 
 //===================== INÍCIO DO SERVIDOR ==============================
 server.listen(8080, '127.0.0.1', function() {
