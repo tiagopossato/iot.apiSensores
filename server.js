@@ -4,8 +4,8 @@ var central = require('./controls/CentralController');
 
 //===================== CRIAÇÃO DO SERVIDOR ==============================
 var server = restify.createServer({
-  certificate: fs.readFileSync('certificados/server.crt'),
-  key: fs.readFileSync('certificados/server.key'),
+  //certificate: fs.readFileSync('certificados/server.crt'),
+  //key: fs.readFileSync('certificados/server.key'),
   name: 'Api Sensores',
 });
 
@@ -43,14 +43,3 @@ server.post('/leitura', central.validateKey, function(req, res, next) {
 server.listen(8080, '127.0.0.1', function() {
   console.log('%s listening at %s', server.name, server.url);
 });
-
-//
-// var server2 = restify.createServer({
-//   name: 'server 2'
-// });
-// server2.get('/hello/:name', function(req, res, next) {
-//     res.send(req.params);
-// });
-// server2.listen(8081, function() {
-//     console.log('%s listening at %s', server2.name, server2.url);
-// });
