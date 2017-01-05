@@ -41,7 +41,7 @@ server.put('/api/alarme', alarme.update);
 server.post('/api/leitura', central.validateKey, function(req, res, next) {
   return res.send(200, {
     error: false,
-    message: "OK!"
+    message: "OK"
   });
 });
 
