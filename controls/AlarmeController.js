@@ -10,8 +10,12 @@ module.exports = {
 };
 
 function createNew(req, res, next) {
-  if (req.params.tempoAtivacao == null || req.params.id == null) {
-    res.send(400, {
+  console.log(req.params);
+
+  if (req.params.tempoAtivacao == null ||
+    req.params.id == null ||
+    isNaN(req.params.id)) {
+    return res.send(400, {
       error: true,
       message: 'Informar pelo menos o tempo de ativação e o id do Alarme'
     });
@@ -19,11 +23,12 @@ function createNew(req, res, next) {
 
   var dados = {};
 
-  dados.id = req.params.id;
+  dados.id = parseInt(req.params.id);
 
   //verifica se foi recebida prioridade no alarme
   if (req.params.prioridade != null) {
-    dados.prioridade = req.params.prioridade;
+    dados.prioridade = isNaN(parseInt(req.params.prioridade)) ?
+      0 : parseInt(req.params.prioridade);
   } else {
     dados.prioridade = 0;
   }
@@ -35,9 +40,13 @@ function createNew(req, res, next) {
 
   //verifica se foi enviado o estado do alarme
   if (req.params.ativo != null) {
-    dados.ativo = req.params.ativo;
+    dados.ativo = req.params.ativo === 'True' ||
+      req.params.ativo == 1 ||
+      req.params.ativo == '1' ||
+      req.params.ativo == true ||
+      req.params.ativo == 'true';
   } else {
-    dados.ativo = 'true';
+    dados.ativo = true;
   }
 
   //verifica se foi enviado o inicio do alarme
@@ -58,7 +67,10 @@ function createNew(req, res, next) {
 
   //verifica se está recebendo reconhecimento de alarme
   if (req.params.reconhecido != null) {
-    dados.reconhecido = req.params.reconhecido;
+    dados.reconhecido = req.params.reconhecido === 'True' ||
+      req.params.reconhecido === 1 ||
+      req.params.reconhecido === '1' ||
+      req.params.reconhecido === 'true';
     if (dados.reconhecido == 'true') {
       //verifica se recebeu mensagem de reconhecido
       if (req.params.mensagemReconhecido != null) {
@@ -74,38 +86,53 @@ function createNew(req, res, next) {
   } else {
     dados.reconhecido = false;
   }
+  console.log('-----------------------------------------------------------');
+  console.log("Novo alarme: ");
+  console.log(dados);
+  console.log('-----------------------------------------------------------');
 
   alarme.forge(dados)
-    .save()
+    .save(null, {
+      method: 'insert'
+    })
     .then(function(alarme) {
-      res.send(201, {
+      return res.send(201, {
         error: false
       });
     })
     .catch(function(err) {
-      res.send(500, {
-        error: true,
-        message: err.message
-      });
+      console.log('Erro alm-01:');
+      console.log(err.message);
+      try {
+        return res.send(500, {
+          error: true,
+          message: err.message
+        });
+      } catch (e) {
+        console.error(e);
+      }
     });
 }
 
 function updateAlarm(req, res, next) {
-  if (req.params.id == null) {
-    res.send(400, {
+  if (req.params.id == null || isNaN(req.params.id)) {
+    return res.send(400, {
       error: true,
       message: 'Informar o id do Alarme'
     });
   }
-
+  console.log(req.params);
   var dados = {};
 
   //pega o id do alarme a ser editado
-  dados.id = req.params.id;
+  dados.id = parseInt(req.params.id);
 
   //verifica se foi enviado o estado do alarme
   if (req.params.ativo != null) {
-    dados.ativo = req.params.ativo;
+    dados.ativo = req.params.ativo === 'True' ||
+      req.params.ativo === 1 ||
+      req.params.ativo === '1' ||
+      req.params.ativo === 'true';
   }
 
   //verifica se está sendo enviado o horário de inativação do alarme
@@ -121,7 +148,10 @@ function updateAlarm(req, res, next) {
 
   //verifica se está recebendo reconhecimento de alarme
   if (req.params.reconhecido != null) {
-    dados.reconhecido = req.params.reconhecido;
+    dados.reconhecido = req.params.reconhecido === 'True' ||
+      req.params.reconhecido === 1 ||
+      req.params.reconhecido === '1' ||
+      req.params.reconhecido === 'true';
     if (dados.reconhecido == 'true') {
       //verifica se recebeu mensagem de reconhecido
       if (req.params.mensagemReconhecido != null) {
@@ -136,19 +166,26 @@ function updateAlarm(req, res, next) {
     }
   }
 
+  console.log('-----------------------------------------------------------');
+  console.log("Editando alarme: ");
   console.log(dados);
+  console.log('-----------------------------------------------------------');
 
   alarme.forge({
       'id': dados.id
     })
-    .save(dados)
+    .save(dados, {
+      method: 'update'
+    })
     .then(function(alarme) {
-      res.send(201, {
+      return res.send(201, {
         error: false
       });
     })
     .catch(function(err) {
-      res.send(500, {
+      console.log('Erro alm-02:');
+      console.log(err.message);
+      return res.send(500, {
         error: true,
         message: err.message
       });
@@ -161,18 +198,18 @@ function getAll(req, res, next) {
     .fetchAll()
     .then(function(dados) {
       if (dados == null) {
-        res.send(404, {
+        return res.send(404, {
           error: false
         });
       } else {
-        res.send(200, {
+        return res.send(200, {
           error: false,
           data: dados.toJSON()
         });
       }
     })
     .catch(function(err) {
-      res.send(500, {
+      return res.send(500, {
         error: true,
         message: err.message
       });
