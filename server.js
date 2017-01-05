@@ -27,6 +27,12 @@ server.use(function(req, res, next) {
 })
 
 //===================== DEFINIÇÃO DAS ROTAS ==============================
+/*Documentação*/
+server.get(/\/api\/docs\/current\/?.*/, restify.serveStatic({
+  directory: './documentos/v1',
+  default: 'index.html'
+}));
+
 /*central*/
 server.get('/api/central', central.getAll);
 server.get('/api/central/:id', central.getOne);
