@@ -10,7 +10,7 @@ module.exports = {
 };
 
 function createNew(req, res, next) {
-  console.log(req.params);
+  //console.log(req.params);
 
   if (req.params.tempoAtivacao == null ||
     req.params.id == null ||
