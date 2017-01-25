@@ -41,11 +41,11 @@ server.post('/api/central', central.createNew);
 /*Alarmes*/
 server.get('/api/alarme', alarme.getAll);
 server.get('/api/alarme/ativos', alarme.getAtivos);
-server.post('/api/alarme', alarme.createNew);
-server.put('/api/alarme', alarme.update);
+server.post('/api/alarme', central.validateUUID, alarme.createNew);
+server.put('/api/alarme', central.validateUUID, alarme.update);
 
 /*Leituras*/
-server.post('/api/leitura', central.validateKey, function(req, res, next) {
+server.post('/api/leitura', central.validateUUID, function(req, res, next) {
   return res.send(200, {
     error: false,
     message: "OK"

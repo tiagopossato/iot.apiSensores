@@ -1,7 +1,7 @@
 "use strict";
 var knexqb = require('knex');
 
-var alarme = require('../models/Alarme');
+var Alarme = require('../models/Alarme');
 
 module.exports = {
   createNew: createNew,
@@ -24,7 +24,8 @@ function createNew(req, res, next) {
 
   var dados = {};
 
-  dados.id = parseInt(req.params.id);
+  dados.idAlarme = parseInt(req.params.id);
+  dados.idCentral = req.params.idCentral;
 
   //verifica se foi recebida prioridade no alarme
   if (req.params.prioridade != null) {
@@ -92,7 +93,7 @@ function createNew(req, res, next) {
   console.log(dados);
   console.log('-----------------------------------------------------------');
 
-  alarme.forge(dados)
+  Alarme.forge(dados)
     .save(null, {
       method: 'insert'
     })
@@ -122,11 +123,13 @@ function updateAlarm(req, res, next) {
       message: 'Informar o id do Alarme'
     });
   }
-  console.log(req.params);
+
+  var alarmeId = {};
   var dados = {};
 
   //pega o id do alarme a ser editado
-  dados.id = parseInt(req.params.id);
+  alarmeId.idAlarme = parseInt(req.params.id);
+  alarmeId.idCentral = req.params.idCentral;
 
   //verifica se foi enviado o estado do alarme
   if (req.params.ativo != null) {
@@ -169,12 +172,14 @@ function updateAlarm(req, res, next) {
 
   console.log('-----------------------------------------------------------');
   console.log("Editando alarme: ");
+  console.log(alarmeId);
   console.log(dados);
   console.log('-----------------------------------------------------------');
 
-  alarme.forge({
-      'id': dados.id
-    })
+
+  new Alarme(alarmeId)
+    .where('idAlarme', '=', alarmeId.idAlarme)
+    .where('idCentral', '=', alarmeId.idCentral)
     .save(dados, {
       method: 'update'
     })
@@ -194,7 +199,7 @@ function updateAlarm(req, res, next) {
 }
 
 function getAll(req, res, next) {
-  alarme.forge()
+  Alarme.forge()
     .fetchAll()
     .then(function(dados) {
       if (dados == null) {
@@ -217,10 +222,8 @@ function getAll(req, res, next) {
 }
 
 function getAtivos(req, res, next) {
-  alarme.forge({
-      'ativo': 1
-    })
-    .fetch()
+  Alarme.forge().where('ativo', '=', 1)
+    .fetchAll()
     .then(function(dados) {
       console.log('ativos');
       if (dados == null) {

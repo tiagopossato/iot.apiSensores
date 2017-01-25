@@ -6,10 +6,10 @@ module.exports = {
   createNew: createNew,
   getOne: getOne,
   getAll: getAll,
-  validateKey: validateKey
+  validateUUID: validateUUID
 };
 
-function validateKey(req, res, next) {
+function validateUUID(req, res, next) {
   if (req.headers.uuid == null) {
     return res.send(203, {
       error: true,
@@ -28,10 +28,12 @@ function validateKey(req, res, next) {
           message: "Não autorizado"
         });
       } else {
+        req.params.idCentral = dados['id']
         next();
       }
     })
     .catch(function(err) {
+      console.log(err);
       res.send(500, {
         error: true,
         message: err.message

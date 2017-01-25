@@ -3,6 +3,6 @@ module.exports = require('knex')({
   connection: {
     filename: 'banco/banco.sqlite'
   },
-  debug: true,
+  debug: false,
   useNullAsDefault: true
 });
