@@ -6,7 +6,8 @@ var alarme = require('../models/Alarme');
 module.exports = {
   createNew: createNew,
   update: updateAlarm,
-  getAll: getAll
+  getAll: getAll,
+  getAtivos: getAtivos
 };
 
 function createNew(req, res, next) {
@@ -192,11 +193,36 @@ function updateAlarm(req, res, next) {
     });
 }
 
-
 function getAll(req, res, next) {
   alarme.forge()
     .fetchAll()
     .then(function(dados) {
+      if (dados == null) {
+        return res.send(404, {
+          error: false
+        });
+      } else {
+        return res.send(200, {
+          error: false,
+          data: dados.toJSON()
+        });
+      }
+    })
+    .catch(function(err) {
+      return res.send(500, {
+        error: true,
+        message: err.message
+      });
+    });
+}
+
+function getAtivos(req, res, next) {
+  alarme.forge({
+      'ativo': 1
+    })
+    .fetch()
+    .then(function(dados) {
+      console.log('ativos');
       if (dados == null) {
         return res.send(404, {
           error: false
